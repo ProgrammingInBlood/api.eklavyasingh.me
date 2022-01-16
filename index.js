@@ -36,6 +36,7 @@ passport.use(
     facebook,
     // Gets called when user authorizes access to their profile
     function (accessToken, refreshToken, profile, done) {
+      console.log(profile);
       done(null, transformFacebookProfile(profile._json));
     }
   )
