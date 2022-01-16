@@ -54,7 +54,10 @@ passport.use(
 );
 
 // Serialize user into the sessions
-passport.serializeUser((user, done) => done(null, user));
+passport.serializeUser((user, done) => {
+  console.log(user);
+  return done(null, user);
+});
 
 // Deserialize user from the sessions
 passport.deserializeUser((user, done) => done(null, user));
