@@ -1,14 +1,16 @@
+const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
+
 const facebook = {
   clientID: process.env.FACEBOOK_CLIENT_ID,
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-  callbackURL: "http://localhost:5000/auth/facebook/callback",
+  callbackURL: `${BASE_URL}/auth/facebook/callback`,
   profileFields: ["id", "name", "displayName", "picture", "email"],
 };
 
 const google = {
   clientID: process.env.GOOGLE_ID,
   clientSecret: process.env.GOOGLE_SECRET,
-  callbackURL: "http://localhost:5000/api/auth/callback/google",
+  callbackURL: `${BASE_URL}/api/auth/callback/google`,
 };
 
 const transformFacebookProfile = (profile) => ({

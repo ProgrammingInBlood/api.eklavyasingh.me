@@ -14,6 +14,7 @@ const Tags = require("./schema/Tags");
 const passport = require("passport");
 const FacebookStrategy = require("passport-facebook");
 const GoogleStrategy = require("passport-google-oauth20");
+
 // Import Facebook and Google OAuth apps configs
 const {
   facebook,
