@@ -13,10 +13,12 @@ const google = {
   callbackURL: `${BASE_URL}/api/auth/callback/google`,
 };
 
+//Transform Facebook profile into user object
 const transformFacebookProfile = (profile) => ({
   userId: profile.id,
   name: profile.name,
   avatar: profile.picture.data.url,
+  provider: "facebook",
 });
 
 // Transform Google profile into user object
@@ -24,6 +26,7 @@ const transformGoogleProfile = (profile) => ({
   userId: profile.sub,
   name: profile.name,
   avatar: profile.picture,
+  provider: "google",
 });
 
 module.exports = {

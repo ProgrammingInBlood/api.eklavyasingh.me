@@ -111,7 +111,7 @@ app.get(
 
 app.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile"] })
+  passport.authenticate("google", { scope: ["openid", "email", "profile"] })
 );
 
 app.get(
