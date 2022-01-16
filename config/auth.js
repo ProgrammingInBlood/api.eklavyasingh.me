@@ -4,7 +4,7 @@ const facebook = {
   clientID: process.env.FACEBOOK_CLIENT_ID,
   clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
   callbackURL: `${BASE_URL}/api/auth/facebook/callback`,
-  profileFields: ["id", "name", "displayName", "picture", "email"],
+  profileFields: ["id", "name", "displayName", "picture", "emails"],
 };
 
 const google = {
