@@ -50,6 +50,7 @@ passport.use(
     profile,
     done
   ) {
+    console.log(profile);
     done(null, transformGoogleProfile(profile._json));
   })
 );

@@ -14,6 +14,7 @@ const google = {
 };
 
 const transformFacebookProfile = (profile) => ({
+  UserId: profile.id,
   name: profile.name,
   avatar: profile.picture.data.url,
 });
