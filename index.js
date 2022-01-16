@@ -6,7 +6,7 @@ const server = require("http").Server(app);
 const cors = require("cors");
 const compare = require("bcrypt").compare;
 require("dotenv").config();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const bodyParser = require("body-parser");
 const Products = require("./schema/Food");
 const Tags = require("./schema/Tags");
