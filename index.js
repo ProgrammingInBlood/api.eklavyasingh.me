@@ -94,7 +94,10 @@ app.post("/api/auth", async (req, res) => {
     },
   });
 }); // Set up Facebook auth routes
-app.get("/auth/facebook", passport.authenticate("facebook"));
+app.get(
+  "/auth/facebook",
+  passport.authenticate("facebook", { scope: ["email"] })
+);
 
 app.get(
   "/api/auth/facebook/callback",

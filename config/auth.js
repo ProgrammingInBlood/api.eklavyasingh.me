@@ -14,13 +14,14 @@ const google = {
 };
 
 const transformFacebookProfile = (profile) => ({
-  UserId: profile.id,
+  userId: profile.id,
   name: profile.name,
   avatar: profile.picture.data.url,
 });
 
 // Transform Google profile into user object
 const transformGoogleProfile = (profile) => ({
+  userId: profile.sub,
   name: profile.name,
   avatar: profile.picture,
 });
