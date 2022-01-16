@@ -96,7 +96,7 @@ app.post("/api/auth", async (req, res) => {
 app.get("/auth/facebook", passport.authenticate("facebook"));
 
 app.get(
-  "/api//auth/facebook/callback",
+  "/api/auth/facebook/callback",
   passport.authenticate("facebook", { failureRedirect: "/auth/facebook" }),
   // Redirect user back to the mobile app using Linking with a custom protocol OAuthLogin
   (req, res) =>
