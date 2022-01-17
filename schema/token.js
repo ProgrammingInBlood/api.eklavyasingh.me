@@ -5,10 +5,11 @@ const nativeSchema = mongoose.Schema({
   name: String,
   email: String,
   avatar: String,
-  provider: String,
   password: String,
+  otp: String,
+  token: String,
   timestamp: { type: Date, default: Date.now },
 });
 
 module.exports =
-  mongoose.models.nativeUser || mongoose.model("nativeUser", nativeSchema);
+  mongoose.models.nativeToken || mongoose.model("nativeToken", nativeSchema);

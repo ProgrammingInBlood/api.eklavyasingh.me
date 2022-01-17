@@ -4,7 +4,6 @@ const db = require("./lib/db");
 const users = require("./schema/users");
 const server = require("http").Server(app);
 const cors = require("cors");
-const compare = require("bcrypt").compare;
 require("dotenv").config();
 const PORT = process.env.PORT || 5000;
 const bodyParser = require("body-parser");
@@ -14,7 +13,10 @@ const Tags = require("./schema/Tags");
 const passport = require("passport");
 const FacebookStrategy = require("passport-facebook");
 const GoogleStrategy = require("passport-google-oauth20");
+const LocalStrategy = require("passport-local");
+const { createUser, sendOtp, verifyOtp } = require("./config/user");
 
+require("./middlewares/passport-init");
 // Import Facebook and Google OAuth apps configs
 const {
   facebook,
@@ -26,74 +28,17 @@ const {
 //initialize body-parser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-//initialize Database
 db();
-
-//initialize passport google and facebook
-passport.use(
-  new FacebookStrategy(
-    facebook,
-    // Gets called when user authorizes access to their profile
-    function (accessToken, refreshToken, profile, done) {
-      console.log(profile);
-      done(null, transformFacebookProfile(profile._json));
-    }
-  )
-);
-
-// Register Google Passport strategy
-passport.use(
-  new GoogleStrategy(google, function (
-    accessToken,
-    refreshToken,
-    profile,
-    done
-  ) {
-    console.log(profile);
-    done(null, transformGoogleProfile(profile._json));
-  })
-);
-
-// Serialize user into the sessions
-passport.serializeUser((user, done) => {
-  console.log(user);
-  return done(null, user);
-});
-
-// Deserialize user from the sessions
-passport.deserializeUser((user, done) => done(null, user));
 
 //initialize Cors middleware
 app.use(cors());
 
-app.post("/", async (req, res) => {
+app.get("/", async (req, res) => {
   const user = await users.find({});
   res.json(user);
 });
 
-app.post("/api/auth", async (req, res) => {
-  console.log(req.body);
-  const { email, password } = req.body;
-  const user = await users.findOne({ email });
-  if (!user) {
-    return res.json({ success: false, message: "Invalid email or password" });
-  }
-  const isValid = await compare(password, user.password);
-  if (!isValid) {
-    return res.json({ success: false, message: "Invalid email or password" });
-  }
-  return res.json({
-    success: true,
-    message: "Successfully logged in",
-    user: {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      avatar: user.avatar,
-    },
-  });
-}); // Set up Facebook auth routes
+// Set up Facebook auth routes
 app.get(
   "/auth/facebook",
   passport.authenticate("facebook", { scope: ["email"] })
@@ -117,9 +62,43 @@ app.get(
 app.get(
   "/api/auth/callback/google",
   passport.authenticate("google", { failureRedirect: "/api/auth/google" }),
-  (req, res) =>
-    res.redirect("OAuthLogin://login?user=" + JSON.stringify(req.user))
+  (req, res) => res.json(req.user)
 );
+
+// Set up local  passport auth routes with message
+app.post("/api/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.json({ success: false, message: info.message });
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.json({
+        success: true,
+        user: {
+          email: user.email,
+          name: user.name,
+          id: user._id,
+          avatar: user.avatar,
+        },
+        message: "Logged in Successfully",
+      });
+    });
+  })(req, res, next);
+});
+
+// app.post("/login", function (req, res, next) {
+//   passport.authenticate("local-register", function (err, user, info) {
+//     return done(null, false, {
+//       message: info.message,
+//     });
+//   });
+// });
 
 app.get("/api/homepage", async (req, res) => {
   const FinalData = [];
@@ -148,6 +127,31 @@ app.get("/api/products/:id", async (req, res) => {
     const getAllProducts = await Products.findOne({ _id: id });
     console.log(getAllProducts);
     res.status(200).json({ success: true, data: getAllProducts });
+  } catch (err) {
+    res.json({ success: false, data: err.message });
+  }
+});
+
+app.post("/api/createuser", async (req, res) => {
+  const { name, email, password } = req.body;
+  const profile = {
+    name,
+    email,
+    password,
+  };
+  try {
+    const token = await sendOtp(profile);
+    res.status(200).json(token);
+  } catch (err) {
+    res.json({ success: false, data: err.message });
+  }
+});
+
+app.post("/api/createuser/verify", async (req, res) => {
+  const { token, otp } = req.body;
+  try {
+    const verify = await verifyOtp(token, otp);
+    res.status(200).json(verify);
   } catch (err) {
     res.json({ success: false, data: err.message });
   }
