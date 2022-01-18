@@ -47,8 +47,7 @@ app.get(
   passport.authenticate("facebook", { failureRedirect: "/auth/facebook" }),
   // Redirect user back to the mobile app using Linking with a custom protocol OAuthLogin
   (req, res) =>
-    // res.redirect("OAuthLogin://login?user=" + JSON.stringify(req.user))
-    res.send(req.user)
+    res.redirect("exp://192.168.29.128:19000?user=" + JSON.stringify(req.user))
 );
 
 // Set up Google auth routes
@@ -66,7 +65,7 @@ app.get(
 );
 
 // Set up local  passport auth routes with message
-app.post("/api/login", (req, res, next) => {
+app.post("/auth/credentials", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) {
       return next(err);
@@ -91,14 +90,6 @@ app.post("/api/login", (req, res, next) => {
     });
   })(req, res, next);
 });
-
-// app.post("/login", function (req, res, next) {
-//   passport.authenticate("local-register", function (err, user, info) {
-//     return done(null, false, {
-//       message: info.message,
-//     });
-//   });
-// });
 
 app.get("/api/homepage", async (req, res) => {
   const FinalData = [];
