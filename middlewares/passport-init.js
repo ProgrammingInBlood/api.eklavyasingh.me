@@ -9,6 +9,7 @@ const {
   transformFacebookProfile,
   transformGoogleProfile,
 } = require("../config/auth");
+const { createUser } = require("../config/user");
 const users = require("../schema/users");
 
 //initialize passport google and facebook
