@@ -54,7 +54,12 @@ app.get(
 
 app.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["openid", "email", "profile"] })
+  passport.authenticate("google", {
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ],
+  })
 );
 
 app.get(
