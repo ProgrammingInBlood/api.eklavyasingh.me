@@ -17,6 +17,7 @@ const google = {
 const transformFacebookProfile = (profile) => ({
   userId: profile.id,
   name: profile.name,
+  email: profile.email,
   avatar: profile.picture.data.url,
   provider: "facebook",
 });
@@ -25,6 +26,7 @@ const transformFacebookProfile = (profile) => ({
 const transformGoogleProfile = (profile) => ({
   userId: profile.sub,
   name: profile.name,
+  email: profile.email,
   avatar: profile.picture,
   provider: "google",
 });
