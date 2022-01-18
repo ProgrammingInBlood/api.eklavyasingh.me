@@ -47,7 +47,8 @@ app.get(
   passport.authenticate("facebook", { failureRedirect: "/auth/facebook" }),
   // Redirect user back to the mobile app using Linking with a custom protocol OAuthLogin
   (req, res) =>
-    res.redirect("OAuthLogin://login?user=" + JSON.stringify(req.user))
+    // res.redirect("OAuthLogin://login?user=" + JSON.stringify(req.user))
+    res.send(req.user)
 );
 
 // Set up Google auth routes
