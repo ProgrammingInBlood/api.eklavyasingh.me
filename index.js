@@ -11,10 +11,8 @@ const Products = require("./schema/Food");
 const Tags = require("./schema/Tags");
 //AUTHENTICATION PACKAGES
 const passport = require("passport");
-const FacebookStrategy = require("passport-facebook");
-const GoogleStrategy = require("passport-google-oauth20");
-const LocalStrategy = require("passport-local");
-const { createUser, sendOtp, verifyOtp } = require("./config/user");
+
+const { sendOtp, verifyOtp } = require("./config/user");
 
 require("./middlewares/passport-init");
 // Import Facebook and Google OAuth apps configs
@@ -62,7 +60,7 @@ app.get(
 app.get(
   "/api/auth/callback/google",
   passport.authenticate("google", { failureRedirect: "/api/auth/google" }),
-  (req, res) => res.json(req.user)
+  (req, res) => res.redirect("bhojan://login?user=" + JSON.stringify(req.user))
 );
 
 // Set up local  passport auth routes with message
