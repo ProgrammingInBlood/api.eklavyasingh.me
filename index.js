@@ -60,7 +60,10 @@ app.get(
 app.get(
   "/api/auth/callback/google",
   passport.authenticate("google", { failureRedirect: "/api/auth/google" }),
-  (req, res) => res.redirect("exp://?user=" + JSON.stringify(req.user))
+  (req, res) =>
+    res.redirect(
+      "exp://exp://192.168.29.128:19000?user=" + JSON.stringify(req.user)
+    )
 );
 
 // Set up local  passport auth routes with message
