@@ -1,4 +1,4 @@
-const User = require("../schema/Users");
+const User = require("../schema/users");
 const router = require("express").Router();
 
 //check if username available

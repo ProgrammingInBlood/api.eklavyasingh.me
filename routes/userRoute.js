@@ -1,6 +1,6 @@
 const Answers = require("../schema/Answers");
 const Questions = require("../schema/Questions");
-const User = require("../schema/Users");
+const User = require("../schema/users");
 const router = require("express").Router();
 
 //get user info from db
