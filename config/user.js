@@ -5,21 +5,25 @@ const otpGenerator = require("otp-generator");
 const { v4: uuidv4 } = require("uuid");
 const { confiramtionEmail } = require("../lib/mailer");
 var uniqid = require("uniqid");
-
+const jwt = require("jsonwebtoken");
 const createUser = async (profile) => {
   try {
     const checkUser = await users.findOne({ userId: profile.userId });
     if (!checkUser) {
-      await users.create({
+      const newUser = await users.create({
         userId: profile.userId,
         name: profile.name,
         email: profile.email,
         avatar: profile.avatar,
         provider: profile.provider,
       });
-      return { success: true, message: "user created" };
+      return { success: true, data: newUser, message: "user created" };
     } else {
-      return { success: false, message: "user already exists" };
+      return {
+        success: true,
+        data: checkUser,
+        message: "user already exists",
+      };
     }
   } catch (error) {
     return { success: false, message: error };
@@ -33,19 +37,29 @@ const RegisterUser = async (profile) => {
       provider: "credentials",
     });
     if (!checkUser) {
-      await users.create({
+      const user = await users.create({
         userId: profile.userId,
         name: profile.name,
         email: profile.email,
         password: profile.password,
         provider: "credentials",
       });
-      return { success: true, message: "user created" };
+      //sign user with jwt
+      const token = jwt.sign(
+        {
+          userId: user._id,
+          name: user.name,
+          email: user.email,
+          provider: user.provider,
+        },
+        process.env.JWT_SECRET
+      );
+      return { success: true, message: "user created", token: token };
     } else {
       return { success: false, message: "user already exists" };
     }
   } catch (error) {
-    return { success: false, message: error };
+    return { success: false, message: error.message };
   }
 };
 
@@ -128,7 +142,7 @@ const verifyOtp = async (token, otp) => {
         await tokens.deleteMany({ token });
         return create;
       } else {
-        return { success: false, message: "otp not verified" };
+        return { success: false, message: "Invalid OTP" };
       }
     } else {
       return { success: false, message: "token not found" };

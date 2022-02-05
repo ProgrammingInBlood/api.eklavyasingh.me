@@ -8,6 +8,7 @@ const {
   google,
   transformFacebookProfile,
   transformGoogleProfile,
+  transformDatabaseUser,
 } = require("../config/auth");
 const { createUser } = require("../config/user");
 const users = require("../schema/users");
@@ -17,9 +18,9 @@ passport.use(
   new FacebookStrategy(
     facebook,
     // Gets called when user authorizes access to their profile
-    function (accessToken, refreshToken, profile, done) {
-      createUser(transformFacebookProfile(profile._json));
-      done(null, transformFacebookProfile(profile._json));
+    async function (accessToken, refreshToken, profile, done) {
+      const user = await createUser(transformFacebookProfile(profile._json));
+      done(null, transformDatabaseUser(user.data));
     }
   )
 );
@@ -32,33 +33,43 @@ passport.use(
       passwordField: "password",
     },
     function (email, password, done) {
-      users.findOne({ email: email }, async function (err, user) {
-        const comparePassword = await compare(password, user.password);
-        if (err) {
-          return done(err);
+      console.log({ email, password });
+
+      users.findOne(
+        { email: email, provider: "credentials" },
+        async function (err, user) {
+          if (err) {
+            return done(err);
+          }
+          if (!user) {
+            return done(null, false, {
+              message: "Invalid username or password",
+            });
+          }
+          if (!(await compare(password, user.password))) {
+            return done(null, false, {
+              message: "Invalid username or password",
+            });
+          }
+          return done(null, transformDatabaseUser(user), {
+            message: "Logged in Successfully",
+          });
         }
-        if (!user) {
-          return done(null, false, { message: "User not found" });
-        }
-        if (!comparePassword) {
-          return done(null, false, { message: "Incorrect password" });
-        }
-        return done(null, user, { message: "Logged in Successfully" });
-      });
+      );
     }
   )
 );
 
 // Register Google Passport strategy
 passport.use(
-  new GoogleStrategy(google, function (
+  new GoogleStrategy(google, async function (
     accessToken,
     refreshToken,
     profile,
     done
   ) {
-    createUser(transformGoogleProfile(profile._json));
-    done(null, transformGoogleProfile(profile._json));
+    const user = await createUser(transformGoogleProfile(profile._json));
+    done(null, transformDatabaseUser(user.data));
   })
 );
 

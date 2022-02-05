@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
 
 const facebook = {
@@ -10,7 +12,7 @@ const facebook = {
 const google = {
   clientID: process.env.GOOGLE_ID,
   clientSecret: process.env.GOOGLE_SECRET,
-  callbackURL: `${BASE_URL}/api/auth/callback/google`,
+  callbackURL: `/api/auth/callback/google/web`,
 };
 
 //Transform Facebook profile into user object
@@ -31,9 +33,23 @@ const transformGoogleProfile = (profile) => ({
   provider: "google",
 });
 
+const transformDatabaseUser = (user) => {
+  const payload = {
+    userId: user._id,
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar,
+    provider: user.provider,
+  };
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET);
+  return token;
+};
+
 module.exports = {
   facebook,
   google,
   transformFacebookProfile,
   transformGoogleProfile,
+  transformDatabaseUser,
 };
