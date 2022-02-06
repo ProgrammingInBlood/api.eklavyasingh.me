@@ -83,7 +83,9 @@ app.get(
   "/api/auth/callback/google/web",
   passport.authenticate("google", { failureRedirect: "/auth/google" }),
   (req, res) => {
-    res.redirect("http://localhost:3001/auth/authRedirect?token=" + req.user);
+    res.redirect(
+      "https://brainup.eklavyasingh.me/auth/authRedirect?token=" + req.user
+    );
   }
 );
 
